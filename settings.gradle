@@ -1,0 +1,4 @@
+rootProject.name = 'knights'
+include 'lancelot'
+include 'galahad'
+

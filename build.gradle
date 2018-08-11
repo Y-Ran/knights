@@ -1,0 +1,125 @@
+ext {
+    version = [
+            "slf4j-api"          : "1.7.25",
+            "logback-classic"    : "1.2.3",
+            "gson"               : "2.8.5",
+            "spring"             : "5.0.8.RELEASE",
+            "guava"              : "26.0-jre",
+            "commons-lang"       : "3.7",
+            "commons-collections": "4.2",
+            "commons-text"       : "1.4",
+            "commons-io"         : "2.6",
+            "netty"              : "4.1.28.Final",
+            "junit"              : "4.12",
+            "mockito"            : "2.21.0",
+    ]
+    dependencies = [
+            "slf4j-api"          : "org.slf4j:slf4j-api:${ext.version['slf4j-api']}",
+            "jcl-over-slf4j"     : "org.slf4j:jcl-over-slf4j:${ext.version['slf4j-api']}",
+            "log4j-over-slf4j"   : "org.slf4j:log4j-over-slf4j:${ext.version['slf4j-api']}",
+            "jul-to-slf4j"       : "org.slf4j:jul-to-slf4j:${ext.version['slf4j-api']}",
+            "logback-classic"    : "ch.qos.logback:logback-classic:${ext.version['logback-classic']}",
+            "gson"               : "com.google.code.gson:gson:${ext.version['gson']}",
+            "spring-context"     : "org.springframework:spring-context:${ext.version['spring']}",
+            "spring-core"        : "org.springframework:spring-core:${ext.version['spring']}",
+            "spring-beans"       : "org.springframework:spring-beans:${ext.version['spring']}",
+            "spring-jdbc"        : "org.springframework:spring-jdbc:${ext.version['spring']}",
+            "spring-test"        : "org.springframework:spring-test:${ext.version['spring']}",
+            "guava"              : "com.google.guava:guava:${ext.version['guava']}",
+            "commons-lang"       : "org.apache.commons:commons-lang3:${ext.version['commons-lang']}",
+            "commons-collections": "org.apache.commons:commons-collections4:${ext.version['commons-collections']}",
+            "commons-text"       : "org.apache.commons:commons-text:${ext.version['commons-text']}",
+            "commons-io"         : "commons-io:commons-io:${ext.version['commons-io']}",
+            "netty"              : "io.netty:netty-all:${ext.version['netty']}",
+            "junit"              : "junit:junit:${ext.version['junit']}",
+            "mockito"            : "org.mockito:mockito-core:${ext.version['mockito']}",
+    ]
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    group 'com.yiran'
+    version = '1.0.0'
+
+    project(":lancelot") {
+        version = '1.0.0'
+    }
+    project(":galahad") {
+        version = '1.0.0'
+    }
+
+    // JVM 版本号要求
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    // java编译的时候缺省状态下会因为中文字符而失败
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+
+    configurations {
+        // 所有需要忽略的包定义在此
+    }
+
+    dependencies {
+        // 通用依赖
+        compile rootProject.ext.dependencies['slf4j-api']
+        compile rootProject.ext.dependencies['jcl-over-slf4j']
+        compile rootProject.ext.dependencies['log4j-over-slf4j']
+        compile rootProject.ext.dependencies['jul-to-slf4j']
+        compile rootProject.ext.dependencies['logback-classic']
+        compile rootProject.ext.dependencies['gson']
+
+        testCompile rootProject.ext.dependencies['junit']
+        testCompile rootProject.ext.dependencies['mockito']
+    }
+
+    // -------------下面是打包过程---------------
+    // 清理旧打包数据
+    task cleanProject(type: Delete) {
+        delete 'build', 'target', "out"
+    }
+    // 清理完成后开始打包
+    compileJava.dependsOn(cleanProject)
+
+    // 复制配置文件
+    task copyConfig(type: Copy, dependsOn: check) {
+        from "${buildDir}/resources"
+        into "${buildDir}/${project.name}-${project.version}/config"
+        include("*/*.properties", "*/*.xml", "*/*.json")
+    }
+
+    // 复制jar包
+    task copyJar(type: Copy, dependsOn: copyConfig) {
+        from "${buildDir}/libs/${project.name}-${project.version}.jar"
+        into "${buildDir}/${project.name}-${project.version}"
+    }
+
+    // 复制libs
+    task copyLibs(type: Copy, dependsOn: copyJar) {
+        from configurations.runtime
+        into "${buildDir}/${project.name}-${project.version}/libs"
+    }
+
+    // 打zip压缩包
+    task zipAll(type: Zip, dependsOn: copyLibs) {
+        destinationDir = file("${buildDir}/${project.name}-${project.version}")
+        archiveName = "../${project.name}-${project.version}.zip"
+        from "${buildDir}/${project.name}-${project.version}"
+        exclude("${project.name}-${project.version}.zip")
+        into "${project.name}-${project.version}"
+    }
+
+    // 结束打包
+    build.dependsOn(zipAll)
+}

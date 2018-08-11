@@ -1,0 +1,20 @@
+dependencies {
+    compile rootProject.ext.dependencies['spring-beans']
+    compile rootProject.ext.dependencies['spring-core']
+    compile rootProject.ext.dependencies['spring-context']
+    compile rootProject.ext.dependencies['spring-test']
+    compile rootProject.ext.dependencies['netty']
+}
+
+def mainClass = "com.yiran.lancelot.LancelotMain"
+
+jar {
+    manifest {
+        attributes 'Manifest-Version': '1.0'
+        attributes 'Created-By': 'Gradle'
+        attributes 'Main-Class': mainClass
+        attributes 'Class-Path': ". config/ libs/" + configurations.runtime.collect { it.name }.join(' libs/')
+    }
+    exclude('*.properties')
+    exclude("log4j2.xml")
+}
