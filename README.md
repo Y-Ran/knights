@@ -1,3 +1,3 @@
-lancelot: 基于Netty和Spring的网络通信框架
-galahad : 基于Netty和Spring的RPC框架
-（绝赞开发中）
+lancelot: 基于Netty的网络通信框架 IOC模块打算使用galahad
+
+galahad : 轻量、简单的IOC容器

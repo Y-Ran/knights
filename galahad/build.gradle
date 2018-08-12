@@ -1,9 +1,6 @@
 dependencies {
-    compile rootProject.ext.dependencies['spring-beans']
-    compile rootProject.ext.dependencies['spring-core']
-    compile rootProject.ext.dependencies['spring-context']
-    compile rootProject.ext.dependencies['spring-test']
-    compile rootProject.ext.dependencies['netty']
+    compile rootProject.ext.dependencies['commons-lang']
+    compile rootProject.ext.dependencies['commons-collections']
 }
 
 def mainClass = ""

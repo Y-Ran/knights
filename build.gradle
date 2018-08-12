@@ -40,6 +40,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
+    apply plugin: 'maven-publish'
 
     group 'com.yiran'
     version = '1.0.0'
@@ -50,6 +51,8 @@ subprojects {
     project(":galahad") {
         version = '1.0.0'
     }
+
+
 
     // JVM 版本号要求
     sourceCompatibility = 1.8
@@ -63,8 +66,11 @@ subprojects {
     }
 
     repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven {
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
+        }
         mavenCentral()
+        mavenLocal()
     }
 
     configurations {
@@ -92,8 +98,14 @@ subprojects {
     // 清理完成后开始打包
     compileJava.dependsOn(cleanProject)
 
+    //重新已有的task (用于打包源文件, 用于定义某个`publication`中的源文件包, 如下面的: `artifact sourceJar`)
+    task sourceJar(type: Jar, dependsOn:check) {
+        from sourceSets.main.allJava
+        classifier "sources" //定义一个标志 (生成的jar包后面加上sources, 如: jlib-2.2.11-sources.jar)
+    }
+
     // 复制配置文件
-    task copyConfig(type: Copy, dependsOn: check) {
+    task copyConfig(type: Copy, dependsOn: sourceJar) {
         from "${buildDir}/resources"
         into "${buildDir}/${project.name}-${project.version}/config"
         include("*/*.properties", "*/*.xml", "*/*.json")
@@ -122,4 +134,36 @@ subprojects {
 
     // 结束打包
     build.dependsOn(zipAll)
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                //打包源码和class
+                from components.java    //发布java组件
+
+                //定义源码task
+                artifact sourceJar
+
+                //定义包的坐标:
+                groupId "${group}"
+                artifactId "${project.name}"
+                version "${project.version}"
+            }
+        }
+
+
+        //定义目标仓库 (包所存放的地方)
+        repositories {
+            //发布到自定义的目录
+//            maven {
+//                url '../repo' //本地仓库 (包存放在项目更目录下的repo目录)
+//            }
+
+            //发布到本地maven仓库 (~/.m2/repository)
+            mavenLocal()
+        }
+    }
+
+    // 默认发布到本地仓库
+    publishToMavenLocal.dependsOn(build)
 }

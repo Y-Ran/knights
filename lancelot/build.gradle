@@ -1,8 +1,4 @@
 dependencies {
-    compile rootProject.ext.dependencies['spring-beans']
-    compile rootProject.ext.dependencies['spring-core']
-    compile rootProject.ext.dependencies['spring-context']
-    compile rootProject.ext.dependencies['spring-test']
     compile rootProject.ext.dependencies['netty']
 }
 
@@ -18,3 +14,5 @@ jar {
     exclude('*.properties')
     exclude("log4j2.xml")
 }
+
+
