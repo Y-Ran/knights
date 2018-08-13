@@ -13,6 +13,10 @@ public class ClassInfo {
     public ClassInfo() {
     }
 
+    public String getClassName() {
+        return this.clazz.getName();
+    }
+
     public Class<?> getClazz() {
         return clazz;
     }

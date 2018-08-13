@@ -1,5 +1,7 @@
 dependencies {
     compile rootProject.ext.dependencies['netty']
+
+    compile "com.yiran:galahad:1.0.0"
 }
 
 def mainClass = "com.yiran.lancelot.LancelotMain"

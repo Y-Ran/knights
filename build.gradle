@@ -43,7 +43,6 @@ subprojects {
     apply plugin: 'maven-publish'
 
     group 'com.yiran'
-    version = '1.0.0'
 
     project(":lancelot") {
         version = '1.0.0'
@@ -51,8 +50,6 @@ subprojects {
     project(":galahad") {
         version = '1.0.0'
     }
-
-
 
     // JVM 版本号要求
     sourceCompatibility = 1.8
