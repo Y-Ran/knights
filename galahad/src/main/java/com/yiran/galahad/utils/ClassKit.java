@@ -236,24 +236,20 @@ public class ClassKit {
                 // 如果当前类满足父类及枚举
                 if (ObjectUtils.allNotNull(clazz.getSuperclass(), clazz.getAnnotation(annotation)) && Objects.equals(parent, clazz.getSuperclass())) {
                     subClassInfoSet.add(new ClassInfo(clazz));
-                    continue;
                 }
-            }
-            // 如果父类不为null
-            if (!Objects.isNull(parent)) {
+            } else if (!Objects.isNull(parent)) {
+                // 如果父类不为null
                 if (!Objects.isNull(clazz.getSuperclass()) && Objects.equals(parent, clazz.getSuperclass())) {
                     subClassInfoSet.add(new ClassInfo(clazz));
-                    continue;
                 }
-            }
-            // 如果注解不为空
-            if (!Objects.isNull(annotation)) {
+            } else if (!Objects.isNull(annotation)) {
+                // 如果注解不为空
                 if (!Objects.isNull(clazz.getAnnotation(annotation))) {
                     subClassInfoSet.add(new ClassInfo(clazz));
-                    continue;
                 }
+            } else {
+                subClassInfoSet.add(new ClassInfo(clazz));
             }
-            subClassInfoSet.add(new ClassInfo(clazz));
         }
 
         return subClassInfoSet;
