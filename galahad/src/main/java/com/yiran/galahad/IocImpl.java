@@ -15,7 +15,7 @@ import java.util.Objects;
 public class IocImpl implements Ioc {
     private static final Logger LOGGER = LoggerFactory.getLogger(IocImpl.class);
 
-    private static final Map<String, BeanDefine> beanPool = new HashMap<>(32);
+//    private static final Map<String, BeanDefine> beanPool = new HashMap<>(32);
 
     @Override
     public void addBean(Object bean) {
@@ -51,4 +51,12 @@ public class IocImpl implements Ioc {
         }
         return clazz.cast(beanPool.get(clazz.getName()));
     }
+
+    @Override
+    public Map<String, BeanDefine> getAllBeans() {
+
+        return beanPool;
+    }
+
+
 }

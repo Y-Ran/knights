@@ -1,6 +1,13 @@
 package com.yiran.galahad;
 
+import com.yiran.galahad.bean.BeanDefine;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public interface Ioc {
+
+    Map<String, BeanDefine> beanPool = new HashMap<>(32);
 
     /**
      * 向IOC容器中添加一个bean
@@ -31,4 +38,6 @@ public interface Ioc {
      * @return bean对象
      */
     <T> T getBean(Class<T> clazz) throws IllegalAccessException;
+
+    Map<String, BeanDefine> getAllBeans();
 }

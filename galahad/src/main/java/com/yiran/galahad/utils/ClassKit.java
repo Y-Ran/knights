@@ -1,5 +1,6 @@
 package com.yiran.galahad.utils;
 
+import com.yiran.galahad.annotation.Component;
 import com.yiran.galahad.bean.ClassInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,7 +37,7 @@ public class ClassKit {
         Set<ClassInfo> classes = classKit.getAllClasses("com.yiran");
         LOGGER.info("start...");
         classes.forEach(clazz -> {
-            LOGGER.info("class : {}", clazz.getClassName());
+            LOGGER.info("class : {}", clazz.getClazzName());
         });
     }
 
@@ -94,7 +95,6 @@ public class ClassKit {
         Set<ClassInfo> classInfoSet = new HashSet<>();
 
         String packageDirName = packageName.replace(".", "/");
-        Enumeration<URL> urlEnumeration;
         try {
             Set<ClassInfo> subClassInfoSet = findClassByJar(packageDirUrl, packageDirName, packageName, parent, annotation, recursive);
             if (CollectionUtils.isNotEmpty(subClassInfoSet)) {
@@ -234,8 +234,10 @@ public class ClassKit {
             // 如果父类和注解都不为null
             if (ObjectUtils.allNotNull(parent, annotation)) {
                 // 如果当前类满足父类及枚举
-                if (ObjectUtils.allNotNull(clazz.getSuperclass(), clazz.getAnnotation(annotation)) && Objects.equals(parent, clazz.getSuperclass())) {
-                    subClassInfoSet.add(new ClassInfo(clazz));
+                Class<?> parentClass = clazz.getSuperclass();
+                Annotation anno = clazz.getAnnotation(annotation);
+                if (ObjectUtils.allNotNull(parentClass, anno) && Objects.equals(parent, parentClass)) {
+                    subClassInfoSet.add(new ClassInfo(anno, clazz));
                 }
             } else if (!Objects.isNull(parent)) {
                 // 如果父类不为null
@@ -244,8 +246,9 @@ public class ClassKit {
                 }
             } else if (!Objects.isNull(annotation)) {
                 // 如果注解不为空
-                if (!Objects.isNull(clazz.getAnnotation(annotation))) {
-                    subClassInfoSet.add(new ClassInfo(clazz));
+                Annotation anno = clazz.getAnnotation(annotation);
+                if (!Objects.isNull(anno)) {
+                    subClassInfoSet.add(new ClassInfo(anno, clazz));
                 }
             } else {
                 subClassInfoSet.add(new ClassInfo(clazz));
